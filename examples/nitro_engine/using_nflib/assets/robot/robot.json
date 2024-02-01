@@ -1,0 +1,11 @@
+{
+  "texture": [256, 256],
+  "blender-fix": true,
+  "export-base-pose": false,
+  "animations": [
+    {
+      "file": "wave.md5anim",
+      "skip-frames": 1
+    }
+  ]
+}

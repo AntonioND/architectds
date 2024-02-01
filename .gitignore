@@ -1,0 +1,13 @@
+# Python cache files
+__pycache__/
+
+# Setuptools
+build/
+dist/
+*.egg-info/
+
+# Vim
+.*swp
+
+# Virtual environments
+env/
