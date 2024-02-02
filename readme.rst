@@ -89,6 +89,12 @@ Examples
 There are lots of examples that show how to use most features. To build any of
 the examples, run ``python3 build.py`` in the folder of the example.
 
+- **gbajpeg/**:
+
+  - ``load_from_nitrofs``: Load and decode a JPEG image from NitroFS.
+
+  - ``load_from_ram``: Load and decode a JPEG image from RAM.
+
 - **libnds/**: Examples with the default BlocksDS libraries.
 
   - ``all``: It shows how to do most things supported by libnds and other very
