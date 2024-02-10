@@ -26,7 +26,7 @@ import json
 import os
 
 AUTHOR_STRING = 'Antonio Niño Díaz'
-VERSION_STRING = '0.1.1'
+VERSION_STRING = '0.1.2'
 
 BLOCKSDS = os.environ.get('BLOCKSDS', '/opt/blocksds/core')
 BLOCKSDSEXT = os.environ.get('BLOCKSDSEXT', '/opt/blocksds/external')
@@ -1759,8 +1759,17 @@ class NdsRom(GenericBinary):
             'NDSTOOL  = ${BLOCKSDS}/tools/ndstool/ndstool\n'
             'TEAKTOOL = ${BLOCKSDS}/tools/teaktool/teaktool\n'
             '\n'
-            'OBJ2DL      = python3 ${BLOCKSDSEXT}/nitro-engine/tools/obj2dl/obj2dl.py\n'
-            'MD5_TO_DSMA = python3 ${BLOCKSDSEXT}/nitro-engine/tools/md5_to_dsma/md5_to_dsma.py\n'
+        )
+
+        # In MinGW, paths for executable files must start with 'C:/', but
+        # python3 expects them to start with '/c/'.
+        blocksdsext = BLOCKSDSEXT.replace('C:/', '/c/')
+        self.print(
+            f'OBJ2DL      = python3 {blocksdsext}/nitro-engine/tools/obj2dl/obj2dl.py\n'
+            f'MD5_TO_DSMA = python3 {blocksdsext}/nitro-engine/tools/md5_to_dsma/md5_to_dsma.py\n'
+        )
+
+        self.print(
             'PTEXCONV    = ${BLOCKSDSEXT}/ptexconv/ptexconv\n'
             '\n'
             'rule makedir\n'
