@@ -6,6 +6,7 @@
 #
 # - Build:
 #
+#     export BLOCKSDS=/opt/blocksds/core
 #     ninja
 #
 # - Clean:
@@ -25,7 +26,7 @@ import json
 import os
 
 AUTHOR_STRING = 'Antonio Niño Díaz'
-VERSION_STRING = '0.1.0'
+VERSION_STRING = '0.1.1'
 
 BLOCKSDS = os.environ.get('BLOCKSDS', '/opt/blocksds/core')
 BLOCKSDSEXT = os.environ.get('BLOCKSDSEXT', '/opt/blocksds/external')
@@ -219,7 +220,9 @@ class GenericBinary():
 
         if build:
             print('[*] BUILD')
-            subprocess.run(['ninja', '-f', ninja_file_path])
+            my_env = os.environ.copy()
+            my_env["BLOCKSDS"] = BLOCKSDS
+            subprocess.run(['ninja', '-f', ninja_file_path], env=my_env)
 
         if graph:
             print('[*] GRAPH')
@@ -1794,10 +1797,10 @@ class NdsRom(GenericBinary):
             '  depfile = ${dep}\n'
             '\n'
             'rule ld_cc_arm\n'
-            '  command = BLOCKSDS=${BLOCKSDS} ${CC_ARM} -o $out $in ${ldflags}\n'
+            '  command = ${CC_ARM} -o $out $in ${ldflags}\n'
             '\n'
             'rule ld_cxx_arm\n'
-            '  command = BLOCKSDS=${BLOCKSDS} ${CXX_ARM} -o $out $in ${ldflags}\n'
+            '  command = ${CXX_ARM} -o $out $in ${ldflags}\n'
             '\n'
             'rule as_teak\n'
             '  command = ${CC_TEAK} ${asflags} -MMD -MP -c -o $out $in\n'

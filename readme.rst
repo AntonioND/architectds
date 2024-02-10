@@ -263,3 +263,8 @@ Note that this is just a python script. At any point in the script you can check
 them. The ``debug_build`` example in the ``libnds`` folder and the
 ``error_handling`` example in the ``nitro_engine`` folder use this to handle
 debug and release builds differently in the same project.
+
+Also, once you have the ``build.ninja`` file, if you want to invoke ``ninja`` by
+itself without the wrapper script, make sure that you set the environment
+variable ``BLOCKSDS`` to the path of your installation of BlocksDS (for example,
+in Linux, ``export BLOCKSDS=/opt/blocksds/core``).
