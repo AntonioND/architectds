@@ -332,6 +332,39 @@ class GenericCpuBinary(GenericBinary):
                 '\n'
             )
 
+    def add_bmfont_fnt(self, in_dirs, out_dir='bmfont'):
+        '''
+        This function gets as input a list of directories. It will look for
+        files with extension '.fnt' (they must be exported in binary format, not
+        text or xml format) and copy them to the filesystem.
+        '''
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+
+        in_out_files = []
+
+        for in_dir in in_dirs:
+            in_files = gen_input_file_list(in_dir, ('.fnt'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '', ''))
+
+        for in_out_file in in_out_files:
+            out_path_base = '_'.join(in_out_file.out_path.rsplit('.', 1))
+
+            out_path_dir = get_parent_dir(out_path_base)
+            self.add_dir_target(out_path_dir)
+
+            in_path = in_out_file.in_path
+
+            out_path_c = out_path_base + '.c'
+            out_path_h = out_path_base + '.h'
+            self.assets_c.append(out_path_c)
+            self.assets_h.append(out_path_h)
+
+            self.print(
+                f'build {out_path_c} {out_path_h}: bin2c {in_path} || {out_path_dir}\n'
+                f'  outdir = {out_path_dir}\n'
+                '\n'
+            )
+
     def add_data_file(self, in_path, out_dir):
         '''
         This function takes a file and injects it as data in the CPU binary.
@@ -1171,6 +1204,32 @@ class GenericFilesystem(GenericBinary):
             self.print(
                 f'build {out_path_tex} {out_path_idx} {out_path_pal} : ptexconv {in_path_png} || {out_path_dir}\n'
                 f'  args = -gt -ob -k FF00FF -v -f tex4x4 -o {ptexconv_out_path} {in_path_png}\n'
+                '\n'
+            )
+
+    def add_bmfont_fnt(self, in_dirs, out_dir='bmfont'):
+        '''
+        This function gets as input a list of directories. It will look for
+        files with extension '.fnt' (they must be exported in binary format, not
+        text or xml format) and copy them to the filesystem.
+        '''
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+
+        in_out_files = []
+
+        for in_dir in in_dirs:
+            in_files = gen_input_file_list(in_dir, ('.fnt'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '', ''))
+
+        for in_out_file in in_out_files:
+            out_path_dir = get_parent_dir(in_out_file.out_path)
+            self.add_dir_target(out_path_dir)
+
+            in_path = in_out_file.in_path
+            out_path = in_out_file.out_path
+
+            self.print(
+                f'build {out_path} : copy {in_path} || {out_path_dir}\n'
                 '\n'
             )
 
