@@ -1251,9 +1251,7 @@ class GenericFilesystem(GenericBinary):
             in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '', ''))
 
         for in_out_file in in_out_files:
-            out_path_base = '_'.join(in_out_file.out_path.rsplit('.', 1))
-
-            out_path_dir = get_parent_dir(out_path_base)
+            out_path_dir = get_parent_dir(in_out_file.out_path)
             self.add_dir_target(out_path_dir)
 
             in_path = in_out_file.in_path
