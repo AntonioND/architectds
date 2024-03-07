@@ -491,7 +491,7 @@ class GenericArmBinary(GenericCpuBinary):
 
         includedirs = self.includedirs + [self.out_assets_path]
 
-        includeflags = ' '.join('-I' + path + '/include' for path in self.libdirs) + \
+        includeflags = ' '.join('-isystem ' + path + '/include' for path in self.libdirs) + \
                        ' ' + ' '.join('-I' + path for path in includedirs)
 
         asflags = (
@@ -1040,7 +1040,7 @@ class TeakBinary(GenericCpuBinary):
 
         # TODO: Support assets
 
-        includeflags = ' '.join('-I' + path + '/include' for path in self.libdirs) + \
+        includeflags = ' '.join('-isystem ' + path + '/include' for path in self.libdirs) + \
                        ' ' + ' '.join('-I' + path for path in self.includedirs)
 
         asflags = (
