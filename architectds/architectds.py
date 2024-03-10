@@ -1296,6 +1296,30 @@ class GenericFilesystem(GenericBinary):
 
         self.target_files.append(out_tlf)
 
+    def add_assembled_binary_files(self, in_dirs, out_dir='files'):
+        '''
+        This function is designed to follow assemble_binary_files, taking the obj
+        files assembled there and turning them into bin files to insert into nitrofs
+        '''
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+        
+        asm_files = []
+
+        for in_dir in in_dirs:
+            in_files = gen_input_file_list(in_dir, extensions='.s')
+            asm_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '.s', '.bin'))
+
+        for asm_file in asm_files:
+            out_path_dir = get_parent_dir(asm_file.out_path)
+            self.add_dir_target(out_path_dir)
+
+            in_path = asm_file.in_path
+            out_path = asm_file.out_path
+
+            self.print(
+                f'build {out_path} : as_bin {in_path} || {out_path_dir}\n'
+            )
+
     def add_files_unchanged(self, in_dirs, out_dir='files'):
         '''
         This function takes a list of directories and injects them right away to
@@ -1805,6 +1829,7 @@ class NdsRom(GenericBinary):
             'PREFIX   = ${ARM_NONE_EABI_PATH}arm-none-eabi-\n'
             'CC_ARM   = ${PREFIX}gcc\n'
             'CXX_ARM  = ${PREFIX}g++\n'
+            'OBJC_ARM = ${PREFIX}objcopy\n'
             '\n'
             'CC_TEAK  = ${LLVM_TEAK_PATH}clang\n'
             'CXX_TEAK = ${LLVM_TEAK_PATH}clang++\n'
@@ -1846,6 +1871,9 @@ class NdsRom(GenericBinary):
             'rule mmutil\n'
             '  command =  ${MMUTIL} $in -d -o${soundbank_bin} -h${soundbank_info_h}\n'
             '  pool = mmutil_pool\n'
+            '\n'
+            'rule as_bin\n'
+            '  command = ${CC_ARM} -c -nostdlib -static -o $out.obj $in; ${OBJC_ARM} -O binary $out.obj $out; rm $out.obj\n'
             '\n'
             'rule as_arm\n'
             '  command = ${CC_ARM} ${asflags} -MMD -MP -c -o $out $in\n'
