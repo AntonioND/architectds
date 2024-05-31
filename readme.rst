@@ -95,6 +95,11 @@ the examples, run ``python3 build.py`` in the folder of the example.
 
   - ``load_from_ram``: Load and decode a JPEG image from RAM.
 
+- **gl2d/**: Examples that use the GL2D library included with libnds.
+
+  - ``sprite_set``: Generate a sprite set from multiple PNG files and add it to
+    the ARM9 binary as data.
+
 - **libnds/**: Examples with the default BlocksDS libraries.
 
   - ``all``: It shows how to do most things supported by libnds and other very
