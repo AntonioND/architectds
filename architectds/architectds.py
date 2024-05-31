@@ -664,9 +664,9 @@ class Arm9Binary(GenericArmBinary):
         # the directory that contains them (in case new files are added).
         self.print(
             f'build {out_path_png} {out_path_c} {out_path_h} : squeezerw {in_dir} {in_files_paths} || {full_out_dir}\n'
-            f'  args = --width {width} --height {height} --allowRotations no '
+            f'  args = --width {width} --height {height} --verbose '
             f'--outputTexture {out_path_png} --outputBaseName {atlas_name} '
-            f'--outputH {out_path_h} --outputC {out_path_c} --verbose {in_dir}\n'
+            f'--outputH {out_path_h} --outputC {out_path_c} {in_dir}\n'
             '\n'
         )
 
