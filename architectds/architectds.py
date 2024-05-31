@@ -1290,6 +1290,8 @@ class GenericFilesystem(GenericBinary):
             in_path = in_out_file.in_path
             out_path = in_out_file.out_path
 
+            self.target_files.extend([out_path])
+
             self.print(
                 f'build {out_path} : copy {in_path} || {out_path_dir}\n'
                 '\n'
