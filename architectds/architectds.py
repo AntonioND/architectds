@@ -1159,12 +1159,13 @@ class GenericFilesystem(GenericBinary):
     music, etc.
     '''
 
-    def __init__(self, flag_assets_name, out_assets_path):
+    def __init__(self, flag_assets_name, out_assets_path, out_temp_path):
         super().__init__(flag_assets_name)
 
         self.target_files = []
 
         self.out_assets_path = out_assets_path
+        self.out_temp_path = out_temp_path
         self.add_dir_target(self.out_assets_path)
 
     def _gen_rule_assets_barrier(self):
@@ -1763,7 +1764,8 @@ class NitroFS(GenericFilesystem):
     ASSETS_BARRIER_NITROFS = 'assets_nitrofs_flag'
 
     def __init__(self):
-        super().__init__(self.ASSETS_BARRIER_NITROFS, 'build/nitrofs')
+        super().__init__(self.ASSETS_BARRIER_NITROFS, 'build/nitrofs',
+                         'build/temp/nitrofs')
 
 class FatFS(GenericFilesystem):
     '''
@@ -1775,7 +1777,8 @@ class FatFS(GenericFilesystem):
     ASSETS_BARRIER_FATFS = 'assets_fatfs_flag'
 
     def __init__(self, out_dir='sdroot'):
-        super().__init__(self.ASSETS_BARRIER_FATFS, out_dir)
+        out_temp_path = os.path.join('build/temp', out_dir)
+        super().__init__(self.ASSETS_BARRIER_FATFS, out_dir, out_temp_path)
 
 class NdsRom(GenericBinary):
     '''
