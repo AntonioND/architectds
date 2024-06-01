@@ -1298,6 +1298,69 @@ class GenericFilesystem(GenericBinary):
                 '\n'
             )
 
+    def add_gl2d_sprite_set(self, in_dir, in_path_grit, width=0, height=0, out_dir='gl2d'):
+        '''
+        This function takes as input a directory full with PNG files and
+        generates a combined texture from them. It is possible to specify the
+        dimensions of the combined texture. If they aren't specified, the tool
+        will try different sizes until one works.
+
+        It is also required to provide a ".grit" file to convert the final
+        combined texture to a DS format.
+        '''
+        # Get name of the directory from the directory path
+        atlas_name = get_file_name(in_dir)
+
+        base_out_dir = os.path.join(self.out_assets_path, out_dir)
+        full_out_dir = os.path.join(base_out_dir, atlas_name)
+
+        base_out_temp_dir = os.path.join(self.out_temp_path, out_dir)
+        full_out_temp_dir = os.path.join(base_out_temp_dir, atlas_name)
+
+        self.add_dir_target(full_out_dir)
+
+        in_files = gen_input_file_list(in_dir, ('.png'))
+
+        # The GUV file needs to be saved to the filesystem, the PNG to a
+        # temporary directory.
+        out_path_guv = os.path.join(full_out_dir, atlas_name + '.guv')
+        out_path_png = os.path.join(full_out_temp_dir, atlas_name + '_texture.png')
+
+        in_files_paths = " ".join(in_files)
+
+        # This rule must depend on both the PNG files (in case they change) and
+        # the directory that contains them (in case new files are added).
+        self.print(
+            f'build {out_path_png} {out_path_guv} : squeezerw {in_dir} {in_files_paths} || {full_out_dir}\n'
+            f'  args = --width {width} --height {height} --verbose '
+            f'--outputTexture {out_path_png} --outputNitro {out_path_guv} {in_dir}\n'
+            '\n'
+        )
+
+        # When grit runs, the ".grit" file must be in the same folder as the
+        # ".png" file and have the same name. It is needed to copy it where the
+        # final ".png" file with the atlas is generated.
+        out_path_grit_copy = os.path.join(full_out_temp_dir, atlas_name + '_texture.grit')
+
+        self.print(
+            f'build {out_path_grit_copy} : copy {in_path_grit} || {full_out_dir}\n'
+            '\n'
+        )
+
+        # The GRF file needs to be saved to the filesystem
+        out_path_grit = os.path.join(full_out_dir, atlas_name + '_texture')
+        out_path_grf = os.path.join(full_out_dir, atlas_name + '_texture.grf')
+
+        self.print(
+            f'build {out_path_grf} : grit {out_path_png} {out_path_grit_copy} || {full_out_dir}\n'
+            f'  in_path_img = {out_path_png}\n'
+            f'  grit_out_path = {out_path_grit}\n'
+            f'  options = -ftr -fh! -W1\n'
+            '\n'
+        )
+
+        self.target_files.extend([out_path_grf, out_path_guv])
+
     def add_mmutil(self, in_dirs, name='soundbank', out_dir_h='build/assets/arm9/nitrofs', out_dir_bin='maxmod'):
         '''
         This function gets as input a list of directories. It will look for
