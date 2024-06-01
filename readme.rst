@@ -100,6 +100,9 @@ the examples, run ``python3 build.py`` in the folder of the example.
   - ``sprite_set``: Generate a sprite set from multiple PNG files and add it to
     the ARM9 binary as data.
 
+  - ``sprite_set_nitrofs``: Generate a sprite set from multiple PNG files and
+    add it to NitroFS.
+
 - **libnds/**: Examples with the default BlocksDS libraries.
 
   - ``all``: It shows how to do most things supported by libnds and other very
