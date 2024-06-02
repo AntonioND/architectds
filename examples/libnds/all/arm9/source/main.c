@@ -32,6 +32,9 @@ int main(int argc, char **argv)
 {
     int textureID;
 
+    // Setup sub screen for the text console
+    consoleDemoInit();
+
     videoSetMode(MODE_0_3D);
 
     glInit();
@@ -55,8 +58,13 @@ int main(int argc, char **argv)
     // Load texture
     glGenTextures(1, &textureID);
     glBindTexture(0, textureID);
-    glTexImage2D(0, 0, GL_RGB, TEXTURE_SIZE_128 , TEXTURE_SIZE_128, 0,
-                 TEXGEN_TEXCOORD, (u8*)neon_pngBitmap);
+    if (glTexImage2D(0, 0, GL_RGBA, 128, 128, 0, TEXGEN_TEXCOORD,
+                     neon_pngBitmap) == 0)
+    {
+        printf("Failed to load texture");
+        while (1)
+            swiWaitForVBlank();
+    }
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -65,9 +73,6 @@ int main(int argc, char **argv)
     gluLookAt(0.0, 0.0, 2.0,  // Position
               0.0, 0.0, 0.0,  // Look at
               0.0, 1.0, 0.0); // Up
-
-    // Setup sub screen for the text console
-    consoleDemoInit();
 
     if (isDSiMode())
     {

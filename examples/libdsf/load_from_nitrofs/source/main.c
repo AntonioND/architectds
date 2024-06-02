@@ -130,11 +130,18 @@ int main(int argc, char **argv)
         glGenTextures(1, &textureID);
         glBindTexture(0, textureID);
 
-        glTexImage2D(0, 0, GL_RGB256, glTexSizeToEnum(header.gfxWidth),
-                     glTexSizeToEnum(header.gfxHeight), 0,
-                     TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
-                     gfxDst);
-        glColorTableEXT(0, 0, 256, 0, 0, palDst);
+        if (glTexImage2D(0, 0, GL_RGB256, header.gfxWidth, header.gfxHeight, 0,
+                         TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
+                         gfxDst) == 0)
+        {
+            printf("Failed to load texture 1");
+            wait_forever();
+        }
+        if (glColorTableEXT(0, 0, 256, 0, 0, palDst) == 0)
+        {
+            printf("Failed to load palette 1");
+            wait_forever();
+        }
 
         free(gfxDst);
         free(palDst);
@@ -175,11 +182,18 @@ int main(int argc, char **argv)
         glGenTextures(1, &textureID2);
         glBindTexture(0, textureID2);
 
-        glTexImage2D(0, 0, GL_RGB16, glTexSizeToEnum(header.gfxWidth),
-                     glTexSizeToEnum(header.gfxHeight), 0,
-                     TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
-                     gfxDst);
-        glColorTableEXT(0, 0, 16, 0, 0, palDst);
+        if (glTexImage2D(0, 0, GL_RGB16, header.gfxWidth, header.gfxHeight, 0,
+                         TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
+                         gfxDst) == 0)
+        {
+            printf("Failed to load texture 2");
+            wait_forever();
+        }
+        if (glColorTableEXT(0, 0, 16, 0, 0, palDst) == 0)
+        {
+            printf("Failed to load palette 2");
+            wait_forever();
+        }
 
         free(gfxDst);
         free(palDst);
@@ -234,11 +248,18 @@ int main(int argc, char **argv)
         glGenTextures(1, &textureID3);
         glBindTexture(0, textureID3);
 
-        glTexImage2D(0, 0, GL_RGB16,
-                     glTexSizeToEnum(out_width), glTexSizeToEnum(out_height), 0,
-                     TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
-                     out_texture);
-        glColorTableEXT(0, 0, 16, 0, 0, palDst);
+        if (glTexImage2D(0, 0, GL_RGB16, out_width, out_height, 0,
+                         TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
+                         out_texture) == 0)
+        {
+            printf("Failed to load texture 3");
+            wait_forever();
+        }
+        if (glColorTableEXT(0, 0, 16, 0, 0, palDst) == 0)
+        {
+            printf("Failed to load palette 3");
+            wait_forever();
+        }
 
         free(out_texture);
 
