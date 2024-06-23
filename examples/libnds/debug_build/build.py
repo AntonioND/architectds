@@ -14,14 +14,17 @@ if '--debug' in argv:
     argv.remove('--debug') # Don't pass this to the build system
     defines_ = []
     libs_ = ['nds9d']
+    cflags_ = '-Wall -O0 -g -std=gnu11'
 else:
     defines_ = ['NDEBUG']
     libs_ = ['nds9']
+    cflags_ = '-Wall -O2 -std=gnu11'
 
 arm9 = Arm9Binary(
     sourcedirs=['source'],
     defines=defines_,
     libs=libs_,
+    cflags=cflags_
 )
 arm9.generate_elf()
 
