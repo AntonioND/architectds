@@ -528,7 +528,7 @@ class GenericArmBinary(GenericCpuBinary):
 
         ldflags = (
             f'{libdirsflags} -Wl,-Map,{self.map_path} {self.arch} '
-            f'-Wl,--start-group {libs} -Wl,--end-group {self.specs}'
+            f'-Wl,--start-group {libs} -Wl,--end-group {self.specs} {self.ldflags}'
         )
 
         obj_file_paths_str = ' '.join(self.obj_file_paths)
@@ -551,7 +551,8 @@ class Arm9Binary(GenericArmBinary):
                  libdirs=['${BLOCKSDS}/libs/libnds', '${BLOCKSDS}/libs/maxmod'],
                  asflags='',
                  cflags='-Wall -O2 -std=gnu11',
-                 cxxflags='-Wall -O2 -std=gnu++14'):
+                 cxxflags='-Wall -O2 -std=gnu++14',
+                 ldflags=''):
         '''
         Constructor of ARM9 binaries.
 
@@ -569,6 +570,7 @@ class Arm9Binary(GenericArmBinary):
         - 'asflags': Optional flags to be passed to the assembler.
         - 'cflags': Optional flags to be passed to the C compiler.
         - 'cxxflags': Optional flags to be passed to the C++ compiler.
+        - 'ldflags': Optional flags to be passed to the linker.
         '''
         super().__init__(self.ASSETS_BARRIER_ARM9)
 
@@ -580,6 +582,7 @@ class Arm9Binary(GenericArmBinary):
         self.asflags = asflags
         self.cflags = cflags
         self.cxxflags = cxxflags
+        self.ldflags = ldflags
 
         self.out_dir = 'build/arm9'
         self.add_dir_target(self.out_dir)
@@ -937,7 +940,8 @@ class Arm7Binary(GenericArmBinary):
                           '${BLOCKSDS}/libs/dswifi'],
                  asflags='',
                  cflags='-Wall -O2 -std=gnu11',
-                 cxxflags='-Wall -O2 -std=gnu++14'):
+                 cxxflags='-Wall -O2 -std=gnu++14',
+                 ldflags=''):
         '''
         Constructor of ARM7 binaries.
 
@@ -955,6 +959,7 @@ class Arm7Binary(GenericArmBinary):
         - 'asflags': Optional flags to be passed to the assembler.
         - 'cflags': Optional flags to be passed to the C compiler.
         - 'cxxflags': Optional flags to be passed to the C++ compiler.
+        - 'ldflags': Optional flags to be passed to the linker.
         '''
 
         super().__init__(self.ASSETS_BARRIER_ARM7)
@@ -967,6 +972,7 @@ class Arm7Binary(GenericArmBinary):
         self.asflags = asflags
         self.cflags = cflags
         self.cxxflags = cxxflags
+        self.ldflags = ldflags
 
         self.out_dir = 'build/arm7'
         self.add_dir_target(self.out_dir)
