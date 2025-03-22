@@ -1005,6 +1005,7 @@ class TeakBinary(GenericCpuBinary):
 
         Mandatory arguments:
 
+        - 'name': Name to identify this specific Teak binary.
         - 'sourcedirs': List of paths to directories with source code.
 
         Optional arguments:
