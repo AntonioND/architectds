@@ -1168,11 +1168,22 @@ class Arm9DynamicLibrary(GenericArmBinary):
             f'build {self.elf_path} | {self.map_path}: {ldcmd} {obj_file_paths_str} || {self.out_dir}\n'
             f'  ldflags = {ldflags}\n'
             '\n'
-            f'build {self.dsl_path}: dsltool {self.elf_path} {self.main_binary.elf_path} || {self.out_dir}\n'
-            f'  elf_path = {self.elf_path}\n'
-            f'  args = -m {self.main_binary.elf_path}\n'
-            '\n'
         )
+
+        if self.main_binary is None:
+            self.print(
+                f'build {self.dsl_path}: dsltool {self.elf_path} || {self.out_dir}\n'
+                f'  elf_path = {self.elf_path}\n'
+                f'  args = \n'
+                '\n'
+            )
+        else:
+            self.print(
+                f'build {self.dsl_path}: dsltool {self.elf_path} {self.main_binary.elf_path} || {self.out_dir}\n'
+                f'  elf_path = {self.elf_path}\n'
+                f'  args = -m {self.main_binary.elf_path}\n'
+                '\n'
+            )
 
 class Arm7BinaryDefault():
     '''
