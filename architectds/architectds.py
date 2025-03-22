@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 #
-# Copyright (c) 2024 Antonio Niño Díaz <antonio_nd@outlook.com>
+# Copyright (c) 2024-2025 Antonio Niño Díaz <antonio_nd@outlook.com>
 
 # Useful ninja-build commands:
 #
@@ -916,6 +916,132 @@ class Arm9Binary(GenericArmBinary):
             self.add_data_file(out_path_idx, out_path_dir)
             self.add_data_file(out_path_pal, out_path_dir)
 
+class Arm9DynamicLibrary(GenericArmBinary):
+    '''
+    Class that represents a dynamic library for the ARM9.
+    '''
+
+    ASSETS_BARRIER_ARM9_DYNAMIC_LIBRARY = 'assets_arm9_dynamic_library_flag_'
+
+    def __init__(self, *, name, main_binary=None, sourcedirs, defines=[],
+                 includedirs=[], libs=[], libdirs=[],
+                 asflags='',
+                 cflags='-Wall -O2 -std=gnu11',
+                 cxxflags='-Wall -O2 -std=gnu++14',
+                 ldflags=''):
+        '''
+        Constructor of ARM9 dynamic libraries.
+
+        Mandatory arguments:
+
+        - 'name': Name to identify this specific ARM9 dynamic library.
+        - 'sourcedirs': List of paths to directories with source code.
+
+        Optional arguments:
+
+        - 'main_binary': Arm9Binary object to be used to resolve unknown symbols.
+        - 'defines': List of defines. Example: ['FEATURE_ON', FEATURE_LEVEL=2']
+        - 'includedirs': List of folders to be searched for headers.
+        - 'libs': List of libraries to be linked to the binary.
+        - 'libdirs': List of paths to be searched for libraries. The paths must
+          contain folders called 'include' and 'lib'.
+        - 'asflags': Optional flags to be passed to the assembler.
+        - 'cflags': Optional flags to be passed to the C compiler.
+        - 'cxxflags': Optional flags to be passed to the C++ compiler.
+        - 'ldflags': Optional flags to be passed to the linker.
+        '''
+        super().__init__(self.ASSETS_BARRIER_ARM9_DYNAMIC_LIBRARY + str(name))
+
+        if main_binary is not None:
+            assert type(main_binary).__name__ == 'Arm9Binary'
+        self.main_binary = main_binary
+
+        self.sourcedirs = sourcedirs
+        self.defines = defines
+        self.includedirs = includedirs
+        self.libs = libs
+        self.libdirs = libdirs
+        self.asflags = asflags
+        self.cflags = cflags
+        self.cxxflags = cxxflags
+        self.ldflags = ldflags
+
+        self.out_dir = os.path.join('build', name)
+        self.add_dir_target(self.out_dir)
+
+        self.out_assets_path = f'build/assets/{name}'
+
+        self.arch = '-mcpu=arm946e-s+nofp'
+        self.specs = '-specs=${BLOCKSDS}/sys/crts/ds_arm9_dsl.specs'
+        self.map_path = os.path.join(self.out_dir, name + '.map')
+        self.elf_path = os.path.join(self.out_dir, name + '.elf')
+        self.dsl_path = os.path.join(self.out_dir, name + '.dsl')
+
+        self.has_cpp = False
+        self.obj_file_paths = []
+
+    def generate_dsl(self):
+        '''
+        This function generates rules to build an ELF and a DSL file.
+        '''
+
+        self._gen_rule_assets_barrier()
+
+        defines = ' '.join(['-D' + define for define in self.defines])
+
+        includedirs = self.includedirs + [self.out_assets_path]
+
+        includeflags = ' '.join('-isystem ' + path + '/include' for path in self.libdirs) + \
+                       ' ' + ' '.join('-I' + path for path in includedirs)
+
+        asflags = (
+            f'-x assembler-with-cpp {defines} {includeflags} '
+            f'-ffunction-sections -fdata-sections {self.specs} '
+            f'{self.arch} {self.asflags} -fvisibility=hidden'
+        )
+
+        cflags = (
+            f'{defines} {includeflags} '
+            f'-ffunction-sections -fdata-sections {self.specs} '
+            f'{self.arch} {self.cflags} -fvisibility=hidden'
+        )
+
+        cxxflags = (
+            f'{defines} {includeflags} -fno-exceptions -fno-rtti '
+            f'-ffunction-sections -fdata-sections {self.specs} '
+            f'{self.arch} {self.cxxflags} -fvisibility=hidden'
+        )
+
+        self._gen_rules_source_arm(self.sourcedirs, self.out_dir,
+                                   asflags, cflags, cxxflags,
+                                   self.assets_c, self.flag_assets_name)
+
+        if self.has_cpp:
+            ldcmd = 'ld_cxx_arm'
+        else:
+            ldcmd = 'ld_cc_arm'
+
+        libs = ' '.join(['-l' + lib for lib in self.libs])
+        libdirsflags = ' '.join(['-L' + libdir + '/lib' for libdir in self.libdirs])
+
+        ldflags = (
+            f'{libdirsflags} -Wl,-Map,{self.map_path} {self.arch} '
+            f'-nostdlib -Wl,--start-group {libs} -Wl,--end-group '
+            f'{self.specs} {self.ldflags} '
+            f'-Wl,--emit-relocs -Wl,--unresolved-symbols=ignore-all -Wl,--nmagic'
+        )
+
+        obj_file_paths_str = ' '.join(self.obj_file_paths)
+
+        self.print(
+            f'build {self.elf_path} | {self.map_path}: {ldcmd} {obj_file_paths_str} || {self.out_dir}\n'
+            f'  ldflags = {ldflags}\n'
+            '\n'
+            f'build {self.dsl_path}: dsltool {self.elf_path} {self.main_binary.elf_path} || {self.out_dir}\n'
+            f'  elf_path = {self.elf_path}\n'
+            f'  args = -m {self.main_binary.elf_path}\n'
+            '\n'
+        )
 
 class Arm7BinaryDefault():
     '''
@@ -1430,6 +1556,24 @@ class GenericFilesystem(GenericBinary):
         )
 
         self.target_files.append(out_tlf)
+
+    def add_arm9_dsl(self, dynamic_lib, out_dir='dsl'):
+        '''
+        Adds an ARM9 dynamic library file to the filesystem.
+        '''
+        assert type(dynamic_lib).__name__ == 'Arm9DynamicLibrary'
+
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+        self.add_dir_target(full_out_dir)
+
+        out_dsl = os.path.join(full_out_dir, get_file_name(dynamic_lib.dsl_path))
+
+        self.print(
+            f'build {out_dsl}: copy {dynamic_lib.dsl_path} || {full_out_dir}\n'
+            '\n'
+        )
+
+        self.target_files.append(out_dsl)
 
     def add_files_unchanged(self, in_dirs, out_dir='files'):
         '''
@@ -1953,6 +2097,7 @@ class NdsRom(GenericBinary):
             'MMUTIL    = ${BLOCKSDS}/tools/mmutil/mmutil\n'
             'NDSTOOL   = ${BLOCKSDS}/tools/ndstool/ndstool\n'
             'TEAKTOOL  = ${BLOCKSDS}/tools/teaktool/teaktool\n'
+            'DSLTOOL   = ${BLOCKSDS}/tools/dsltool/dsltool\n'
             '\n'
         )
 
@@ -2026,6 +2171,9 @@ class NdsRom(GenericBinary):
             '\n'
             'rule teaktool\n'
             '  command = ${TEAKTOOL} -i $in -o $out\n'
+            '\n'
+            'rule dsltool\n'
+            '  command = ${DSLTOOL} -i ${elf_path} -o $out ${args}\n'
             '\n'
             'rule ndstool\n'
             '  command = ${NDSTOOL} -c $out -7 ${arm7elf} -9 ${arm9elf} -b ${game_icon} ${game_full_title} ${ndstool_nitrofs_flags}\n'
