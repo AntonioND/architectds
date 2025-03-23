@@ -122,7 +122,7 @@ the examples, run ``python3 build.py`` in the folder of the example.
   - ``arm9_arm7``: Example of developing custom ARM9 and ARM7 binaries.
 
   - ``arm9_nitrofs``: Simple ROM with only a source file for the ARM9, default
-    ARM7, and NitroFS data files.
+    ARM7, and NitroFS data files added to the filesystem by the developer.
 
   - ``dsp``: Example of loading DSP binaries from memory and NitroFS.
 
@@ -190,7 +190,7 @@ the examples, run ``python3 build.py`` in the folder of the example.
     and saved to the ARM9 as binary data.
 
   - ``sdroot_animated_model``: MD5 animated model and 16 bit texture converted
-    with grit and stored in the SD card.
+    with grit and stored in the SD card of a flashcard or the DSi SD slot.
 
   - ``simple_model``: OBJ static model and 16 bit texture converted with grit
     and added to the ARM9 as binary data.
