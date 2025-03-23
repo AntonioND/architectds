@@ -1107,6 +1107,7 @@ class Arm9DynamicLibrary(GenericArmBinary):
         self.map_path = os.path.join(self.out_dir, name + '.map')
         self.elf_path = os.path.join(self.out_dir, name + '.elf')
         self.dsl_path = os.path.join(self.out_dir, name + '.dsl')
+        self.dsl_standalone_path = name + '.dsl'
 
         self.has_cpp = False
         self.obj_file_paths = []
@@ -1184,6 +1185,27 @@ class Arm9DynamicLibrary(GenericArmBinary):
                 f'  args = -m {self.main_binary.elf_path}\n'
                 '\n'
             )
+
+    def generate_dsl_standalone(self):
+        '''
+        This function generates rules to use build tools, combines the rules to
+        build all source and assets, and it generates rules to build the final
+        DSL file.
+
+        This function will generate the full output file with rules, the
+        Arm9DynamicLibrary object doesn't need to be added to a
+        GenericFilesystem object (such as NitroFS or FatFS).
+        '''
+        # Save the file to the top level folder rather than build/
+        self.dsl_path = self.dsl_standalone_path
+
+        # General rules for all used tools
+        gen_rules_tools(self)
+
+        self.generate_dsl()
+
+        # Rules to generate all directories
+        self._gen_rules_build_directories()
 
 class Arm7BinaryDefault():
     '''
@@ -2209,7 +2231,6 @@ class NdsRom(GenericBinary):
             else:
                 # Other binaries don't require special handling
                 pass
-
 
     def _gen_rules_nds(self):
         '''
