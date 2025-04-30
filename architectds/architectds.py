@@ -350,11 +350,8 @@ class GenericBinary():
             '  deps = gcc\n'
             '  depfile = ${dep}\n'
             '\n'
-            'rule ld_cc_arm\n'
+            'rule ld_arm\n'
             '  command = ${CC_ARM} -o $out $in ${ldflags}\n'
-            '\n'
-            'rule ld_cxx_arm\n'
-            '  command = ${CXX_ARM} -o $out $in ${ldflags}\n'
             '\n'
             'rule as_teak\n'
             '  command = ${CC_TEAK} ${asflags} -MMD -MP -c -o $out $in\n'
@@ -649,10 +646,8 @@ class GenericArmBinary(GenericCpuBinary):
 
         if self.has_cpp:
             self.libs.extend(['stdc++', 'c'])
-            ldcmd = 'ld_cxx_arm'
         else:
             self.libs.extend(['c'])
-            ldcmd = 'ld_cc_arm'
 
         libs = ' '.join(['-l' + lib for lib in self.libs])
         libdirsflags = ' '.join(['-L' + libdir + '/lib' for libdir in self.libdirs])
@@ -665,7 +660,7 @@ class GenericArmBinary(GenericCpuBinary):
         obj_file_paths_str = ' '.join(self.obj_file_paths)
 
         self.print(
-            f'build {self.elf_path} | {self.map_path}: {ldcmd} {obj_file_paths_str} || {self.out_dir}\n'
+            f'build {self.elf_path} | {self.map_path}: ld_arm {obj_file_paths_str} || {self.out_dir}\n'
             f'  ldflags = {ldflags}\n'
             '\n'
         )
@@ -1148,11 +1143,6 @@ class Arm9DynamicLibrary(GenericArmBinary):
                                    asflags, cflags, cxxflags,
                                    self.assets_c, self.flag_assets_name)
 
-        if self.has_cpp:
-            ldcmd = 'ld_cxx_arm'
-        else:
-            ldcmd = 'ld_cc_arm'
-
         libs = ' '.join(['-l' + lib for lib in self.libs])
         libdirsflags = ' '.join(['-L' + libdir + '/lib' for libdir in self.libdirs])
 
@@ -1166,7 +1156,7 @@ class Arm9DynamicLibrary(GenericArmBinary):
         obj_file_paths_str = ' '.join(self.obj_file_paths)
 
         self.print(
-            f'build {self.elf_path} | {self.map_path}: {ldcmd} {obj_file_paths_str} || {self.out_dir}\n'
+            f'build {self.elf_path} | {self.map_path}: ld_arm {obj_file_paths_str} || {self.out_dir}\n'
             f'  ldflags = {ldflags}\n'
             '\n'
         )
