@@ -130,7 +130,12 @@ the examples, run ``python3 build.py`` in the folder of the example.
 
 - **libxm7/**:
 
-  - ``play_songs``: Example that uses libxm7 instead of Maxmod to play music.
+  - ``nitrofs``: Example that uses LibXM7 to play XM and MOD songs from NitroFS.
+    It also shows how to use a different pre-built ARM7 core from BlocksDS and
+    how to add regular files to NitroFS in a ROM without converting them.
+
+  - ``play_songs``: Example that uses LibXM7 to play songs included in the ARM9
+    binary as data.
 
 - **maxmod/**:
 
