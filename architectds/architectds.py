@@ -1202,8 +1202,9 @@ class Arm7BinaryDefault():
     Class that represents the default ARM7 of BlocksDS.
     '''
 
-    def __init__(self):
-        self.elf_path = '${BLOCKSDS}/sys/default_arm7/arm7.elf'
+    def __init__(self,
+                 elf_path='${BLOCKSDS}/sys/arm7/main_core/arm7_dswifi_maxmod.elf'):
+        self.elf_path = elf_path
         self.contents = ''
         self.dir_targets = []
 
@@ -2215,7 +2216,7 @@ class NdsRom(GenericBinary):
                 self.nitrofs = binary
             elif type_name == 'Arm9Binary':
                 self.arm9 = binary
-            elif type_name == 'Arm7Binary':
+            elif type_name == 'Arm7Binary' or type_name == 'Arm7BinaryDefault':
                 # This will replace the default ARM7 binary
                 self.arm7 = binary
             else:
