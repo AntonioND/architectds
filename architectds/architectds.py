@@ -216,6 +216,9 @@ class GenericBinary():
             if os.path.isfile(graph_png_path):
                 os.remove(graph_png_path)
 
+            if os.path.isfile('compile_commands.json'):
+                os.remove('compile_commands.json')
+
         if ninja:
             print('[*] NINJA')
             self.save_to_file(out_path=ninja_file_path)
