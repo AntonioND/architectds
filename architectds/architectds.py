@@ -228,10 +228,9 @@ class GenericBinary():
 
         if compdb:
             print('[*] COMPDB')
-            proc = subprocess.run(['ninja', '-f', ninja_file_path, '-t', 'compdb'],
-                                  encoding='utf-8', stdout=subprocess.PIPE)
-            with open('compile_commands.json', 'w') as f:
-                f.write(proc.stdout)
+            with open('compile_commands.json', 'w') as cc:
+                subprocess.call(['ninja', 'f', ninja_file_path, '-t', 'compdb'],
+                                encoding='utf-8', stdout=cc)
 
         if graph:
             print('[*] GRAPH')
