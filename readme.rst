@@ -64,8 +64,8 @@ with:
 
     from architectds import *
 
-If you want to install it in your system instead of copying the folder, follow
-the steps below:
+If you want to install it in a virtual environment instead of copying the
+folder, follow the steps below:
 
 .. code:: bash
 
@@ -82,6 +82,17 @@ the steps below:
 
     # Install wheel
     pip3 install dist/architectds-*-py3-none-any.whl
+
+If you want to install it in your system, you may find issues. Linux
+distributions now disallow installing user packages in system folders. This is
+done so that users don't break system libraries, but it affects all packages,
+even the ones that your system doesn't depend on. This is discouraged, but you
+can force the instalation with:
+
+.. code:: bash
+
+    # Install wheel
+    pip3 install dist/architectds-*-py3-none-any.whl --break-system-packages
 
 Examples
 --------
