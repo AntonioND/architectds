@@ -276,6 +276,8 @@ arguments passed to the python script:
 
 - ``python3 build.py --clean``: Clean all build files.
 
+- ``python3 build.py --compdb``: Generate a ``compile_commands.json`` file.
+
 - ``python3 build.py --graph``: If you have ``graphviz`` installed in your
   system, this will generate a PNG file with the dependency graph of your
   project.

@@ -177,14 +177,15 @@ class GenericBinary():
         clean = '-c' in args or '--clean' in args
         graph = '-g' in args or '--graph' in args
         help_ = '-h' in args or '--help' in args
+        compdb = '-j' in args or '--compdb' in args
         ninja = '-n' in args or '--ninja' in args
 
         # Build ROM if the script has been called with no arguments.
-        if not build and not clean and not graph and not ninja and not help_:
+        if not (build or clean or compdb or graph or ninja or help_):
             build = True
 
         # If there is any argument that requires the ninja file, generate it.
-        if build or graph:
+        if build or compdb or graph:
             ninja = True
 
         if help_:
@@ -192,11 +193,12 @@ class GenericBinary():
             print('')
             print('Options:')
             print('')
-            print('  -b / --build : Generate ninja file and build ROM.')
-            print('  -c / --clean : Clean build outputs and ninja file.')
-            print('  -g / --graph : Generate dependency graph as a PNG file.')
-            print('  -n / --ninja : Generate ninja file.')
-            print('  -h / --help  : Show this message.')
+            print('  -b / --build  : Generate ninja file and build ROM.')
+            print('  -c / --clean  : Clean build outputs and ninja file.')
+            print('  -g / --graph  : Generate dependency graph as a PNG file.')
+            print('  -n / --ninja  : Only generate ninja file.')
+            print('  -j / --compdb : Generate compile_commands.json.')
+            print('  -h / --help   : Show this message.')
             print('')
             print('If no option is used, the tool will act the same as if')
             print('--build had been used.')
@@ -223,6 +225,13 @@ class GenericBinary():
             my_env = os.environ.copy()
             my_env["BLOCKSDS"] = BLOCKSDS
             subprocess.run(['ninja', '-f', ninja_file_path], env=my_env)
+
+        if compdb:
+            print('[*] COMPDB')
+            proc = subprocess.run(['ninja', '-f', ninja_file_path, '-t', 'compdb'],
+                                  encoding='utf-8', stdout=subprocess.PIPE)
+            with open('compile_commands.json', 'w') as f:
+                f.write(proc.stdout)
 
         if graph:
             print('[*] GRAPH')
