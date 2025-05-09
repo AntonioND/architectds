@@ -11,3 +11,6 @@ dist/
 
 # Virtual environments
 env/
+
+# Compile commands files
+compile_commands.json
