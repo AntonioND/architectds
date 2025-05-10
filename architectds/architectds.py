@@ -1161,7 +1161,7 @@ class Arm9DynamicLibrary(GenericArmBinary):
             f'{libdirsflags} -Wl,-Map,{self.map_path} {self.arch} '
             f'-nostdlib -Wl,--start-group {libs} -Wl,--end-group '
             f'{self.specs} {self.ldflags} '
-            f'-Wl,--emit-relocs -Wl,--unresolved-symbols=ignore-all -Wl,--nmagic'
+            f'-Wl,--emit-relocs -Wl,--unresolved-symbols=ignore-all -Wl,--nmagic -Wl,--target1-abs'
         )
 
         obj_file_paths_str = ' '.join(self.obj_file_paths)
