@@ -7,7 +7,8 @@
 from architectds import *
 
 nitrofs = NitroFS()
-nitrofs.add_ptexconv_tex4x4(['assets/filesystem'])
+nitrofs.add_ptexconv_tex4x4(['assets/filesystem/no_args'])
+nitrofs.add_ptexconv(['assets/filesystem/with_args'])
 nitrofs.generate_image()
 
 arm9 = Arm9Binary(
