@@ -12,8 +12,8 @@
 #include "ptexconv/grill_png_pal_bin.h"
 #include "ptexconv/grill_png_tex_bin.h"
 
-NE_Material *Material1, *Material2;
-NE_Palette *Palette1, *Palette2;
+NE_Material *Material1, *Material2, *Material3;
+NE_Palette *Palette1, *Palette2, *Palette3;
 
 void Draw3DScene1(void)
 {
@@ -32,9 +32,12 @@ void Draw3DScene2(void)
 
     NE_2DViewInit();
 
-    NE_2DDrawTexturedQuad(64, 0,
-                          64 + 128, 0 + 128,
+    NE_2DDrawTexturedQuad(0, 0,
+                          0 + 128, 0 + 128,
                           0, Material2);
+    NE_2DDrawTexturedQuad(128, 0,
+                          128 + 128, 0 + 128,
+                          0, Material3);
 }
 
 int main(void)
@@ -63,8 +66,10 @@ int main(void)
     // Allocate objects
     Material1 = NE_MaterialCreate();
     Material2 = NE_MaterialCreate();
+    Material3 = NE_MaterialCreate();
     Palette1 = NE_PaletteCreate();
     Palette2 = NE_PaletteCreate();
+    Palette3 = NE_PaletteCreate();
 
     NE_MaterialTex4x4Load(Material1, 128, 128, NE_TEXGEN_TEXCOORD,
                           grill_png_tex_bin, grill_png_idx_bin);
@@ -78,6 +83,12 @@ int main(void)
                              "ptexconv/landscape_jpg_idx.bin");
     NE_PaletteLoadFAT(Palette2, "ptexconv/landscape_jpg_pal.bin", NE_TEX4X4);
     NE_MaterialSetPalette(Material2, Palette2);
+
+    NE_MaterialTex4x4LoadFAT(Material3, 128, 128, NE_TEXGEN_TEXCOORD,
+                             "ptexconv/antonio_png_tex.bin",
+                             "ptexconv/antonio_png_idx.bin");
+    NE_PaletteLoadFAT(Palette3, "ptexconv/antonio_png_pal.bin", NE_TEX4X4);
+    NE_MaterialSetPalette(Material3, Palette3);
 
     while (1)
     {
