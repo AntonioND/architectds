@@ -2242,7 +2242,7 @@ class NdsRom(GenericBinary):
         '''
         # Combine the title strings
         if self.game_subtitle is None:
-            game_full_title = '"{self.game_title};{self.game_author}"'
+            game_full_title = f'"{self.game_title};{self.game_author}"'
         else:
             game_full_title = f'"{self.game_title};{self.game_subtitle};{self.game_author}"'
 
