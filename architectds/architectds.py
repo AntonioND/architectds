@@ -26,7 +26,7 @@ import json
 import os
 
 AUTHOR_STRING = 'Antonio Niño Díaz'
-VERSION_STRING = '0.3.1'
+VERSION_STRING = '0.4.0'
 
 BLOCKSDS = os.environ.get('BLOCKSDS', '/opt/blocksds/core')
 BLOCKSDSEXT = os.environ.get('BLOCKSDSEXT', '/opt/blocksds/external')
