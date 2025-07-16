@@ -1018,7 +1018,7 @@ class Arm9Binary(GenericArmBinary):
         '''
         This function gets as input a list of directories. It will look for
         files with extension '.png' and '.jpg'. Then, it will create rules to
-        convert them and add them to Texel 4x4 format textures and add them to
+        convert them to Texel 4x4 format textures and add them to
         the CPU binary as data.
         '''
         full_out_dir = os.path.join(self.out_assets_path, out_dir)
@@ -1052,6 +1052,58 @@ class Arm9Binary(GenericArmBinary):
             self.add_data_file(out_path_tex, out_path_dir)
             self.add_data_file(out_path_idx, out_path_dir)
             self.add_data_file(out_path_pal, out_path_dir)
+    
+    def add_ptexconv(self, in_dirs, out_dir='ptexconv'):
+        '''
+        This function gets as input a list of directories. It will look for
+        files with extension '.png' and '.jpg'. It will then look for files alongside
+        them with the same name but with the extension '.ptxc'. The, it will create
+        rules to convert them to an NDS format with ptexconv using the arguments supplied
+        in the .ptxc file and add them to the CPU as binary data.
+        '''
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+
+        in_out_files = []
+
+        for in_dir in in_dirs:
+            in_files = gen_input_file_list(in_dir, ('.png'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '.png', '_png'))
+            in_files = gen_input_file_list(in_dir, ('.jpg'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '.jpg', '_jpg'))
+            
+        for in_out_file in in_out_files:
+            ptexconv_out_path = in_out_file.out_path
+
+            out_path_dir = get_parent_dir(ptexconv_out_path)
+            self.add_dir_target(out_path_dir)
+
+            in_path_png = in_out_file.in_path
+            in_args = '#'
+            with open(f'{os.path.splitext(in_out_file.in_path)[0]}.ptxc', 'r') as arg_file:
+                while in_args.strip().startswith('#'):
+                    in_args = arg_file.readline()
+
+            out_path_tex = ptexconv_out_path + '_tex.bin'
+            out_path_idx = ptexconv_out_path + '_idx.bin'
+            out_path_pal = ptexconv_out_path + '_pal.bin'
+
+            build_args = f'{out_path_tex}'
+            if '-f tex4x4' in in_args:
+                build_args += f' {out_path_idx}'
+            if '-f direct' not in in_args:
+                build_args += f' {out_path_pal}'
+
+            self.print(
+                f'build {build_args} : ptexconv {in_path_png} || {out_path_dir}\n'
+                f'  args = {in_args} -o {ptexconv_out_path} {in_path_png}\n'
+                '\n'
+            )
+
+            self.add_data_file(out_path_tex, out_path_dir)
+            if '-f tex4x4' in in_args:
+                self.add_data_file(out_path_idx, out_path_dir)
+            if '-f direct' not in in_args:
+                self.add_data_file(out_path_pal, out_path_dir)
 
 class Arm9DynamicLibrary(GenericArmBinary):
     '''
@@ -1536,7 +1588,7 @@ class GenericFilesystem(GenericBinary):
         '''
         This function gets as input a list of directories. It will look for
         files with extension '.png' and '.jpg'. Then, it will create rules to
-        convert them and add them to Texel 4x4 format textures and add them to
+        convert them to Texel 4x4 format textures and add them to
         the filesystem as '.bin' files.
         '''
         full_out_dir = os.path.join(self.out_assets_path, out_dir)
@@ -1566,6 +1618,58 @@ class GenericFilesystem(GenericBinary):
             self.print(
                 f'build {out_path_tex} {out_path_idx} {out_path_pal} : ptexconv {in_path_png} || {out_path_dir}\n'
                 f'  args = -gt -ob -k FF00FF -v -f tex4x4 -o {ptexconv_out_path} {in_path_png}\n'
+                '\n'
+            )
+    
+    def add_ptexconv(self, in_dirs, out_dir='ptexconv'):
+        '''
+        This function gets as input a list of directories. It will look for
+        files with extension '.png' and '.jpg'. It will then look for files alongside
+        them with the same name but with the extension '.ptxc'. The, it will create
+        rules to convert them to an NDS format with ptexconv using the arguments supplied
+        in the .ptxc file and add them to the filesystem as '.bin' files.
+        '''
+        full_out_dir = os.path.join(self.out_assets_path, out_dir)
+
+        in_out_files = []
+
+        for in_dir in in_dirs:
+            in_files = gen_input_file_list(in_dir, ('.png'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '.png', '_png'))
+            in_files = gen_input_file_list(in_dir, ('.jpg'))
+            in_out_files.extend(gen_out_file_list(in_files, in_dir, full_out_dir, '.jpg', '_jpg'))
+            
+        for in_out_file in in_out_files:
+            ptexconv_out_path = in_out_file.out_path
+
+            out_path_dir = get_parent_dir(ptexconv_out_path)
+            self.add_dir_target(out_path_dir)
+
+            in_path_png = in_out_file.in_path
+            in_args = '#'
+            with open(f'{os.path.splitext(in_out_file.in_path)[0]}.ptxc', 'r') as arg_file:
+                while in_args.strip().startswith('#'):
+                    in_args = arg_file.readline()
+
+            out_path_tex = ptexconv_out_path + '_tex.bin'
+            out_path_idx = ptexconv_out_path + '_idx.bin'
+            out_path_pal = ptexconv_out_path + '_pal.bin'
+
+            build_args = f'{out_path_tex}'
+            if '-f tex4x4' in in_args:
+                build_args += f' {out_path_idx}'
+            if '-f direct' not in in_args:
+                build_args += f' {out_path_pal}'
+
+            self.target_files.append(out_path_tex)
+            if '-f tex4x4' in in_args:
+                self.target_files.append(out_path_idx)
+            if '-f direct' not in in_args:
+                self.target_files.append(out_path_pal)
+
+            self.print(
+                f'build {build_args} : ptexconv {in_path_png} || {out_path_dir}\n'
+                f'  args = {in_args} -o {ptexconv_out_path} {in_path_png}\n'
                 '\n'
             )
 

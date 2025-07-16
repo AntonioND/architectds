@@ -28,7 +28,8 @@ of assets and their destination (NitroFS or CPU data).
 
   - Nitro Engine: Static and animated models are supported.
 
-  - ptexconv: Used to generate textures in Tex4x4 format.
+  - ptexconv: Used to generate textures in all different DS formats, with a helper
+    function for Tex4x4.
 
   - libxm7, dswifi, gbajpg and other libraries that don't require special
     tooling are also supported.
@@ -191,8 +192,8 @@ the examples, run ``python3 build.py`` in the folder of the example.
   - ``filesystem_animated_model``: MD5 animated model and 16 bit texture
     converted with grit and added to NitroFS.
 
-  - ``filesystem_compressed_texture``: Texture converted to Tex4x4 with ptexconv
-    and saved to NitroFS.
+  - ``filesystem_compressed_texture``: Textures converted to Tex4x4 with ptexconv
+    (with and without optionally specified arguments) and saved to NitroFS.
 
   - ``filesystem_paletted_texture``: Paletted textures converted with grit to
     GRF format and saved to NitroFS.
@@ -247,6 +248,10 @@ that need to be converted. For folders that need to be added as they are, check
 the ``NdsRom`` class below. The ``NitroFS`` object can take any number of
 graphics files to be converted with ``grit`` or ``ptexconv``, audio files that
 are converted with ``mmutil``, or even 3D models to be used with Nitro Engine.
+
+A special note must be made for converting graphics with ptexconv: if you are using
+the ``-fp`` option to specify a fixed palette, you must also pass ``-fpo`` to ensure
+the fixed palette is output to the destination directory.
 
 If you want to store your files in your SD card instead of the NitroFS
 filesystem, you can create a ``FatFS`` object instead. It behaves the same way
