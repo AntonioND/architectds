@@ -1643,10 +1643,14 @@ class GenericFilesystem(GenericBinary):
             self.add_dir_target(out_path_dir)
 
             in_path_png = in_out_file.in_path
-            in_args = '#'
+
+            # Parse all lines in the file and concatenate them
+            in_args = ""
             with open(f'{os.path.splitext(in_out_file.in_path)[0]}.ptxc', 'r') as arg_file:
-                while in_args.strip().startswith('#'):
-                    in_args = arg_file.readline()
+                line = arg_file.readline().strip('\n')
+                if not line.startswith('#'):
+                    in_args += " " + line;
+            assert len(in_args) > 0
 
             out_path_tex = ptexconv_out_path + '_tex.bin'
             out_path_idx = ptexconv_out_path + '_idx.bin'
