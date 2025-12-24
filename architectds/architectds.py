@@ -1624,7 +1624,8 @@ class GenericFilesystem(GenericBinary):
         files with extension '.png' and '.jpg'. It will then look for files alongside
         them with the same name but with the extension '.ptxc'. The, it will create
         rules to convert them to an NDS format with ptexconv using the arguments supplied
-        in the .ptxc file and add them to the filesystem as '.bin' files.
+        in the .ptxc file and add them to the filesystem as '.bin' files (or as
+        a single '.grf' file if '-og' is found in the arguments).
         '''
         full_out_dir = os.path.join(self.out_assets_path, out_dir)
 
@@ -1652,21 +1653,32 @@ class GenericFilesystem(GenericBinary):
                     in_args += " " + line;
             assert len(in_args) > 0
 
-            out_path_tex = ptexconv_out_path + '_tex.bin'
-            out_path_idx = ptexconv_out_path + '_idx.bin'
-            out_path_pal = ptexconv_out_path + '_pal.bin'
+            if '-og' in in_args:
+                # Write rules for a GRF output file
 
-            build_args = f'{out_path_tex}'
-            if '-f tex4x4' in in_args:
-                build_args += f' {out_path_idx}'
-            if '-f direct' not in in_args:
-                build_args += f' {out_path_pal}'
+                out_path_grf = ptexconv_out_path + '.grf'
 
-            self.target_files.append(out_path_tex)
-            if '-f tex4x4' in in_args:
-                self.target_files.append(out_path_idx)
-            if '-f direct' not in in_args:
-                self.target_files.append(out_path_pal)
+                build_args = f'{out_path_grf}'
+
+                self.target_files.append(out_path_grf)
+            else:
+                # Write rules for a BIN output file
+
+                out_path_tex = ptexconv_out_path + '_tex.bin'
+                out_path_idx = ptexconv_out_path + '_idx.bin'
+                out_path_pal = ptexconv_out_path + '_pal.bin'
+
+                build_args = f'{out_path_tex}'
+                if '-f tex4x4' in in_args:
+                    build_args += f' {out_path_idx}'
+                if '-f direct' not in in_args:
+                    build_args += f' {out_path_pal}'
+
+                self.target_files.append(out_path_tex)
+                if '-f tex4x4' in in_args:
+                    self.target_files.append(out_path_idx)
+                if '-f direct' not in in_args:
+                    self.target_files.append(out_path_pal)
 
             self.print(
                 f'build {build_args} : ptexconv {in_path_png} || {out_path_dir}\n'
