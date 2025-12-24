@@ -2311,7 +2311,7 @@ class NdsRom(GenericBinary):
                  game_title='NDS ROM',
                  game_subtitle='Built with BlocksDS',
                  game_author='github.com/blocksds/sdk',
-                 game_icon='${BLOCKSDS}/sys/icon.bmp',
+                 game_icon='${BLOCKSDS}/sys/icon.gif',
                  title_id='',
                  unit_code=-1):
         '''
@@ -2331,7 +2331,7 @@ class NdsRom(GenericBinary):
         - 'game_title': First line of the ROM header text.
         - 'game_subtitle': Second line of the ROM header text.
         - 'game_author': Third line of the ROM header text.
-        - 'game_icon': Icon to be used in the ROM header.
+        - 'game_icon': Icon to be used in the ROM header (PNG, BMP or GIF).
         - 'nds_path': Output path of the generated NDS file. The default value
           is generated from the current directory name.
         - 'title_id': A 32-bit integer represented as a hex string that specifies
